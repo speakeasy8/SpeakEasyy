@@ -26,16 +26,15 @@ connect();
 async function selectMessages(id) {
     const client = await connect();
     //const res = await client.query('SELECT * FROM clientes WHERE ID=$1', [id]);
-    const res = await client.query('SELECT id, texto, "createdAt", "updatedAt" FROM public.conversas');
+    const res = await client.query('SELECT id_conversa, mensagem, data_hr_mensagem, nome_usuario FROM descritivo d INNER JOIN usuarios u ON d.id_usuario = u.id_usuario ORDER BY data_hr_mensagem');
     return res.rows;
 }
 
 async function insertMessages(msg) {
     const client = await connect();
     //const res = await client.query('SELECT * FROM clientes WHERE ID=$1', [id]);
-    const res = await client.query('insert into public.conversas (texto,"createdAt","updatedAt") values ($1,CURRENT_DATE, CURRENT_DATE)',[msg]);
-    //return res.rows;
+    const res = await client.query('insert into descritivo (mensagem, id_usuario, id_conversa) values ($1, $2, $3)',[msg]);
+    return res.rows;
 }
  
-module.exports = { selectMessages, selectMessages }
-//module.exports = { insertMessages, insertMessages }
+module.exports = { selectMessages, insertMessages }

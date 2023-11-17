@@ -7,23 +7,16 @@ const { open } = require('sqlite');
 require("dotenv").config();
 const db = require("./db");
 
+/*const axios = require('axios');
+
+
+
+array.forEach(function(element) {
+  console.log(element);
+});
+*/
 async function main() {
 
-  /*  // open the database file
-  const db = await open({
-    filename: 'chat.db',
-    driver: sqlite3.Database
-  });
-
-  // create our 'messages' table (you can ignore the 'client_offset' column for now)
-  await db.exec(`
-    CREATE TABLE IF NOT EXISTS messages (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        client_offset TEXT UNIQUE,
-        content TEXT
-    );
-  `);
-*/
   const app = express();
   const server = createServer(app);
   const io = new Server(server, {
@@ -39,9 +32,15 @@ async function main() {
     res.json(customer);
   })
 
+  app.get('/messages', async (req,res) => {
+    console.log('db',db);
+    const messages = await db.selectMessages(undefined);
+    res.json(messages)
+  })
+
   io.on('connection', (socket) => {
     socket.on('chat message', async (msg) => {
-      //let result;
+      let result;
       try {
         // store the message in the database
         //result = await db.run('INSERT INTO messages (content) VALUES (?)', msg);
@@ -61,6 +60,6 @@ async function main() {
     console.log('server running at http://localhost:3000');
     
   });
-}
 
+}
 main();

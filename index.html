@@ -17,124 +17,179 @@
 
 
     <div class="direct-chat-msg">
-            
+
       <div class="direct-chat-infos clearfix">
         <style>
           .direct-chat-infos clearfix {
-            width: 1000px; /* Defina a largura desejada */
-            height: 200px; /* Defina a altura desejada */
+            width: 1000px;
+            /* Defina a largura desejada */
+            height: 200px;
+            /* Defina a altura desejada */
           }
         </style>
         <span class="direct-chat-name float-left">Chat</span>
-         <div class="container">
-       
+        <div class="container">
+
           <div class="clock"></div>
+        </div>
+
       </div>
-       
-      </div>
-    
 
-   
-   
- 
 
-    <br>
 
-    
-  
-      <div> 
+
+
+
+      <br>
+
+
+
+      <div>
         <form id="form">
           <div id="messages"></div>
-          <input id="input" type="text" style="width: 350px;  color: brown;">
+          <input id="campoConversa" type="text" style="width: 350px;  color: brown;">
+          <select id="nomeUsuario">
+            <button onclick="mostrarUsuarioSelecionado()">Mostrar Usuário Selecionado</button>
+
         </form>
 
-         <script src="/socket.io/socket.io.js"></script>
-         <script>
-      const socket = io({
-          auth: {
-            serverOffset: 0
-          }
-        });
+    
 
-        const form = document.getElementById('form');
-       const input = document.getElementById('input');
-        const messages = document.getElementById('messages');
-        
+        <script src="/socket.io/socket.io.js"></script>
+        <script>
+          const socket = io({
+            auth: {
+              serverOffset: 0
+            }
+          });
 
-        form.addEventListener('submit', (e) => {
-          e.preventDefault();
-          if (input.value) {
-            socket.emit('chat message', input.value);
-           input.value = '';
-         }
-      });
 
+
+          const form = document.getElementById('form');
+          const inputConversa = document.getElementById('campoConversa');
+          const messages = document.getElementById('messages');
+          const usuario = document.getElementById('nomeUsuario');
+          const conversa = document.getElementById('conversa');
+
+          var listaDeUsuarios = [
+      { id: 1, nome: 'Usuário 1' },
+      { id: 2, nome: 'Usuário 2' },
+      { id: 3, nome: 'Usuário 3' },
      
-      
-      const axios = require('axios');
+    ];
 
-axios.post('http://localhost:3000/messages/1', {
-    title: 'conversa',
-    body: 'mensagem',
-    userId: 1
-})
-.then(response => {
-    console.log('Resposta:', response.data);
-})
-.catch(error => {
-    console.error('Erro:', error);
-});
+    var selectUsuarios = document.getElementById('nomeUsuario');
 
-const array = [1, 2, 3, 4, 5];
+    listaDeUsuarios.forEach(function(usuario) {
+      var option = document.createElement('option');
+      option.value = usuario.id;
+      option.text = usuario.nome;
+      selectUsuarios.add(option);
+    });
 
-array.forEach(function(element) {
-  console.log(element);
-});
+    function mostrarUsuarioSelecionado() {
+      var selectedIndex = selectUsuarios.selectedIndex;
+      if (selectedIndex !== -1) {
+        var selectedUserId = selectUsuarios.options[selectedIndex].value;
+        var selectedUserName = selectUsuarios.options[selectedIndex].text;
+        alert('Usuário selecionado:\nID: ' + selectedUserId + '\nNome: ' + selectedUserName);
+      } else {
+        alert('Nenhum usuário selecionado');
+      }
+    }
 
-
-     /*
-
-      pegar o objeto e fazer o foreach
-
-      e criar as li igual o codigo abaixo
-         const item = document.createElement('li');
-          item.textContent = msg;
-          messages.appendChild(item);
-
+          form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            if (inputConversa.value ) {
+              socket.emit('chat message', inputConversa.value, usuario.value, conversa.value);
+              input.value = '';
+            }
+          });
 
 
-      */      
+          async function carregarMensagens(){
+            const response = await fetch('http://localhost:3000/messages');
+            const mensagens = await response.json();
+            
+            console.log(mensagens)
+            for (i = 0; i < mensagens.length; i++){
+              console.log(messages)
+              console.log(mensagens[i]);
+              const item = document.createElement('li');
+              item.textContent = mensagens[i].nome_usuario + ': ' + mensagens[i].mensagem;
+              //item.textContent = '[' + mensagens[i].data_hr_mensagem + '] ' + mensagens[i].nome_usuario + ': ' + mensagens[i].mensagem;
+              messages.appendChild(item);
+              window.scrollTo(0, document.body.scrollHeight);              
+            }
+
+          }
+
+          carregarMensagens();
+
+          /*
     
-
-        socket.on('chat message', (msg, serverOffset) => {
-         const item = document.createElement('li');
-          item.textContent = msg;
-          messages.appendChild(item);
-          window.scrollTo(0, document.body.scrollHeight);
-         socket.auth.serverOffset = serverOffset;
-        });
+    axios.post('http://localhost:3000/messages/1', {
+        title: 'conversa',
+        body: 'mensagem',
+        userId: 1
+    })
+    .then(response => {
+        console.log('Resposta:', response.data);
+    })
+    .catch(error => {
+        console.error('Erro:', error);
+    });
     
-       
+    const array = [1, 2, 3, 4, 5];
+    
+    array.forEach(function(element) {
+      console.log(element);
+    });
+    
+    */
+          /*
+     
+           pegar o objeto e fazer o foreach
+     
+           e criar as li igual o codigo abaixo
+              const item = document.createElement('li');
+               item.textContent = msg;
+               messages.appendChild(item);
+     
+     
+     
+           */
 
-      
-       
-       
-        const getHours = () => {
-  const clock = document.getElementsByClassName('clock')[0]
-  const date = new Date()
-  const hours = date.getHours()
-  const minutes = date.getMinutes()
-  const seconds = date.getSeconds()
-  const hour = hours < 10 ? `0${hours}` : hours
-  const minute = minutes < 10 ? `0${minutes}` : minutes
-  const second = seconds < 10 ? `0${seconds}` : seconds
-  clock.innerHTML = `${hour}:${minute}:${second}`
-}
 
-setInterval(() => {
-  getHours()
-}, 1000)
-     </script>
+          socket.on('chat message', (msg, serverOffset) => {
+            const item = document.createElement('li');
+            item.textContent = msg;
+            messages.appendChild(item);
+            window.scrollTo(0, document.body.scrollHeight);
+            socket.auth.serverOffset = serverOffset;
+          });
+
+
+
+
+
+
+          const getHours = () => {
+            const clock = document.getElementsByClassName('clock')[0]
+            const date = new Date()
+            const hours = date.getHours()
+            const minutes = date.getMinutes()
+            const seconds = date.getSeconds()
+            const hour = hours < 10 ? `0${hours}` : hours
+            const minute = minutes < 10 ? `0${minutes}` : minutes
+            const second = seconds < 10 ? `0${seconds}` : seconds
+            clock.innerHTML = `${hour}:${minute}:${second}`
+          }
+
+          setInterval(() => {
+            getHours()
+          }, 1000)
+        </script>
   </body>
 
 </html>
